@@ -59,9 +59,12 @@ class Button(Widget):
             )
 
     def set_background_color(self, color):
-        super().set_background_color(
-            self._default_background_color if color in {None, TRANSPARENT} else color
-        )
+        if color in {None, TRANSPARENT}:
+            self.native.BackColor = self._native_default_background_color
+            self.native.UseVisualStyleBackColor = True
+        else:
+            self.native.UseVisualStyleBackColor = False
+            super().set_background_color(color)
 
     def rehint(self):
         self.interface.intrinsic.width = self.scale_out(

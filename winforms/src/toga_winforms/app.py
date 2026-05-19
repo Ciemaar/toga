@@ -90,6 +90,9 @@ class App:
         SystemEvents.DisplaySettingsChanged += WeakrefCallable(
             self.winforms_DisplaySettingsChanged
         )
+        SystemEvents.UserPreferenceChanged += WeakrefCallable(
+            self.winforms_UserPreferenceChanged
+        )
 
         # Ensure that TLS1.2 and TLS1.3 are enabled for HTTPS connections.
         # For some reason, some Windows installs have these protocols
@@ -126,6 +129,23 @@ class App:
     def update_dpi(self):
         for window in self.interface.windows:
             window._impl.update_dpi()
+
+    def winforms_UserPreferenceChanged(self, sender, event):
+        # This event is NOT called on the UI thread, so it's not safe for it to access
+        # the UI directly.
+        self.interface.loop.call_soon_threadsafe(self.update_system_colors)
+
+    def update_system_colors(self):
+        def _update(widget):
+            widget._impl.set_background_color(widget.style.background_color)
+            for child in widget.children:
+                _update(child)
+
+        for window in self.interface.windows:
+            if getattr(window, "content", None):
+                # Recursively reapply background colors to blend correctly
+                # with the newly updated system colors.
+                _update(window.content)
 
     ######################################################################
     # Commands and menus
