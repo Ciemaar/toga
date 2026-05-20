@@ -61,6 +61,9 @@ class Widget(Scalable, ABC):
             # of the widget.
             self._default_background_color = toga_color(self.native.BackColor)
 
+        if not hasattr(self, "_native_default_background_color"):
+            self._native_default_background_color = self.native.BackColor
+
         # Obtain a Graphics object and immediately dispose of it. This is
         # done to trigger the control's Paint event and force it to redraw.
         # Since in toga, Hwnds could be created at inappropriate times.
