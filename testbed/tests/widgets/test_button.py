@@ -107,3 +107,12 @@ async def test_background_color_transparent(widget, probe):
     widget.style.background_color = TRANSPARENT
     await probe.redraw("Button background color should be reset to the default color")
     assert_background_color(probe.background_color, original_background_color)
+
+    if hasattr(probe, "has_visual_styles_enabled"):
+        assert probe.has_visual_styles_enabled
+
+    widget.style.background_color = "red"
+    await probe.redraw("Button background color should be red")
+
+    if hasattr(probe, "has_visual_styles_enabled"):
+        assert not probe.has_visual_styles_enabled

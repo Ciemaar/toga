@@ -26,3 +26,7 @@ class ButtonProbe(SimpleProbe):
             )
         else:
             pytest.fail("Icon does not exist")
+
+    @property
+    def has_visual_styles_enabled(self):
+        return self.native.UseVisualStyleBackColor
